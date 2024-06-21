@@ -36,11 +36,9 @@ export async function repair(
     if (!token) {
       throw new Error("Access token not found");
     }
-    console.log(`Token: ${token}`);
 
     // get the JWKS URL for the Microsoft Entra common tenant
     const entraJwksUri = await getEntraJwksUri();
-    console.log(`Entra JWKS URI: ${entraJwksUri}`);
 
     // create a new token validator with the JWKS URL
     const validator = new TokenValidator({
