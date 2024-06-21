@@ -7,6 +7,8 @@ import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/fu
 
 import repairRecords from "../repairsData.json";
 
+import { TokenValidator, getEntraJwksUri } from 'jwt-validate';
+
 /**
  * This function handles the HTTP request and returns the repair information.
  *
@@ -27,6 +29,42 @@ export async function repair(
       results: [],
     },
   };
+
+  // Validate the access token.
+  try {
+    const token = req.headers.get("Authorization")?.split(" ")[1];
+    if (!token) {
+      throw new Error("Access token not found");
+    }
+    console.log(`Token: ${token}`);
+
+    // get the JWKS URL for the Microsoft Entra common tenant
+    const entraJwksUri = await getEntraJwksUri();
+    console.log(`Entra JWKS URI: ${entraJwksUri}`);
+
+    // create a new token validator with the JWKS URL
+    const validator = new TokenValidator({
+      jwksUri: entraJwksUri
+    });
+
+    // define validation options
+    const options = {
+      idtyp: 'app'
+    };
+    // validate the token
+    const validToken = await validator.validateToken(token, options);
+    console.log (`Token is valid`);
+  }
+  catch (ex) {
+    // Token is missing or invalid
+    console.error(ex);
+    res.status = 401;
+    res.jsonBody = {
+      error: "Unauthorized",
+      message: "Access token is missing or invalid"
+    };
+    return res;
+  }
 
   // Get the assignedTo query parameter.
   const assignedTo = req.query.get("assignedTo");
