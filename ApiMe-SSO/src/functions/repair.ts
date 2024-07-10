@@ -47,8 +47,8 @@ export async function repair(
 
     // define validation options
     const options: ValidateTokenOptions = {
-      // aud: process.env["AAD_APP_CLIENT_ID"],
-      allowedTenants: [process.env["AAD_TENANT_ID"]]
+      audience: process.env["AAD_APP_CLIENT_ID"],
+      allowedTenants: [process.env["AAD_APP_TENANT_ID"]]
     };
     // validate the token
     const validToken = await validator.validateToken(token, options);

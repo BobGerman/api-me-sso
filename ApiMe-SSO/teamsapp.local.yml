@@ -104,8 +104,16 @@ deploy:
     writeToEnvironmentFile:
       funcPath: FUNC_PATH
 
+  - uses: file/createOrUpdateEnvironmentFile # Generate runtime environment variables
+    with:
+      target: ./.localConfigs
+      envs:
+        AAD_APP_CLIENT_ID: ${{AAD_APP_CLIENT_ID}}
+        AAD_APP_TENANT_ID: ${{AAD_APP_TENANT_ID}}
+
   # Run npm command
   - uses: cli/runNpmCommand
     name: install dependencies
     with:
       args: install --no-audit
+
