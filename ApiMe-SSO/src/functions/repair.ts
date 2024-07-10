@@ -7,7 +7,7 @@ import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/fu
 
 import repairRecords from "../repairsData.json";
 
-import { TokenValidator, getEntraJwksUri } from 'jwt-validate';
+import { TokenValidator, ValidateTokenOptions, getEntraJwksUri } from 'jwt-validate';
 
 /**
  * This function handles the HTTP request and returns the repair information.
@@ -46,8 +46,9 @@ export async function repair(
     });
 
     // define validation options
-    const options = {
-      idtyp: 'app'
+    const options: ValidateTokenOptions = {
+      // aud: process.env["AAD_APP_CLIENT_ID"],
+      allowedTenants: [process.env["AAD_TENANT_ID"]]
     };
     // validate the token
     const validToken = await validator.validateToken(token, options);

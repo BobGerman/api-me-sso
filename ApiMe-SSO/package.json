@@ -13,7 +13,7 @@
     },
     "dependencies": {
         "@azure/functions": "^4.3.0",
-        "jwt-validate": "^0.2.0"
+        "jwt-validate": "^0.4.1"
     },
     "devDependencies": {
         "@types/node": "^20.11.26",
