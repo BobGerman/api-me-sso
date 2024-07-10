@@ -37,25 +37,28 @@ export async function repair(
       throw new Error("Access token not found");
     }
 
-    // get the JWKS URL for the Microsoft Entra common tenant
+    // create a new token validator for the Microsoft Entra common tenant
     const entraJwksUri = await getEntraJwksUri();
-
-    // create a new token validator with the JWKS URL
     const validator = new TokenValidator({
       jwksUri: entraJwksUri
     });
 
     // define validation options
     const options: ValidateTokenOptions = {
+      // token must target this application
       audience: process.env["AAD_APP_CLIENT_ID"],
-      allowedTenants: [process.env["AAD_APP_TENANT_ID"]]
+      // single tenant application - accept requests from this tenant only
+      allowedTenants: [process.env["AAD_APP_TENANT_ID"]],
+      // token must have the required scope
+      scp: ["access_as_user"]
     };
+
     // validate the token
     const validToken = await validator.validateToken(token, options);
     console.log (`Token is valid for user ${validToken.preferred_username} (${validToken.name})`);
   }
   catch (ex) {
-    // Token is missing or invalid
+    // Token is missing or invalid - return a 401 error
     console.error(ex);
     res.status = 401;
     res.jsonBody = {
