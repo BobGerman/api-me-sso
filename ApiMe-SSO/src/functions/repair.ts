@@ -52,7 +52,7 @@ export async function repair(
     };
     // validate the token
     const validToken = await validator.validateToken(token, options);
-    console.log (`Token is valid`);
+    console.log (`Token is valid for user ${validToken.preferred_username} (${validToken.name})`);
   }
   catch (ex) {
     // Token is missing or invalid
