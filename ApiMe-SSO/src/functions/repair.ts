@@ -43,15 +43,23 @@ export async function repair(
       jwksUri: entraJwksUri
     });
 
-    // define validation options
+    // Use these options for single-tenant applications
     const options: ValidateTokenOptions = {
-      // token must target this application
       audience: process.env["AAD_APP_CLIENT_ID"],
-      // single tenant application - accept requests from this tenant only
-      allowedTenants: [process.env["AAD_APP_TENANT_ID"]],
-      // token must have the required scope
+      issuer: `https://login.microsoftonline.com/${process.env["AAD_APP_TENANT_ID"]}/v2.0`,
       scp: ["access_as_user"]
     };
+
+    // Use these options for multi-tenant applications
+    // const options: ValidateTokenOptions = {
+    //   audience: process.env["AAD_APP_CLIENT_ID"],
+    //   issuer: `https://login.microsoftonline.com/${process.env["AAD_APP_TENANT_ID"]}/v2.0`,
+    //   // You need to manage the list of allowed tenants on your own!
+    //   // For this sample, we only allow the tenant that the app is registered in
+    //   allowedTenants: [process.env["AAD_APP_TENANT_ID"]],
+    //   scp: ["access_as_user"]
+    // };
+
 
     // validate the token
     const validToken = await validator.validateToken(token, options);
